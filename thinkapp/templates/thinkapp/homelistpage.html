@@ -1,0 +1,208 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    {% comment %} <link rel="stylesheet" href="{% static 'thinkapp/css/homestyle.css' %}">
+     {% endcomment %}
+
+    <style>
+  body {
+      opacity: 0;
+      animation: fadeIn 1s ease-in forwards;
+  }
+
+
+  @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+  }
+
+  .abutton {
+      background-color: #5D001E;
+      border-color: #5D001E;
+      color: #FBE9D0;
+      font-weight: 600;
+      transition: all 0.3s ease;
+  }
+
+  .abutton:hover {
+      background-color: #AC3B61;
+      transform: scale(1.05);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  }
+
+  .logout-btn {
+      background-color: #244885;
+      border-color: #244885;
+      color: #FBE9D0;
+      font-weight: 500;
+      transition: all 0.3s ease;
+  }
+
+  .logout-btn:hover {
+      background-color: #5D001E;
+      transform: scale(1.03);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+  }
+
+  .btn-primary {
+      background-color: #244885 !important;
+      border-color: #244885 !important;
+      color: #FBE9D0 !important;
+      transition: all 0.3s ease;
+  }
+
+  .btn-primary:hover {
+      background-color: #5D001E !important;
+      transform: scale(1.03);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+  }
+
+  .question-card {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: cardFadeIn 0.6s forwards;
+  }
+
+  {% for ques in all_data %}
+  .question-card:nth-child({{ forloop.counter }}) {
+      animation-delay: {{ forloop.counter|add:"0.2"|floatformat:1 }}s;
+  }
+  {% endfor %}
+
+  @keyframes cardFadeIn {
+      to {
+          opacity: 1;
+          transform: translateY(0);
+      }
+  }
+
+  .latestques {
+    font-weight: bold;
+    font-size: 40px;
+    color: #5D001E;
+  }
+</style>
+
+
+    
+    <!-- 4. Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+<!-- Navbar - UPDATED -->
+<nav class="navbar navbar-expand-lg navbar-light fixed-top">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{% url 'list' %}">
+      <img src="{% static 'thinkapp/images/logo.png' %}" alt="Logo" width="40" height="40" >
+      Think Tank
+    </a>
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'list' %}">Home</a>
+        </li>
+        {% if user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'profileview' %}">Profile</a>
+          </li>
+        {% endif %}
+      </ul>
+      
+      <!-- Search form - UPDATED button class -->
+      <form class="d-flex me-3 search-form" method="get">
+        <input class="form-control me-2" type="search" name="q" 
+               placeholder="Search..." value="{{ query }}">
+        <button class="btn btn-primary" type="submit">Search</button>
+      </form>
+      
+      <ul class="navbar-nav">
+        {% if user.is_authenticated %}
+          <li class="nav-item">
+            <span class="nav-link">Hi, {{ user.username }}</span>
+          </li>
+          <li class="nav-item">
+            <form method="POST" action="{% url 'logout' %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline-primary logout-btn">Logout</button>
+            </form>
+          </li>
+        {% else %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'login' %}">Login</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'signup' %}">Sign Up</a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<div class="container mt-5 pt-4">
+  
+  <!-- Ask Question Button - ADD abutton class -->
+  <div class="d-flex justify-content-end mb-4">
+    <a class="btn btn-primary btn-lg abutton" href="{% url 'addques' %}">Ask New Question</a>
+  </div>
+
+  <h3 class="mb-4 section-title latestques">Latest Questions</h3>
+
+  {% for ques in all_data %}
+  <div class="card mb-3 question-card">
+    <div class="card-body">
+      <h5 class="card-title">
+        <a href="{% url 'details' id=ques.id %}">
+          {{ ques.title }}
+        </a>
+      </h5>
+      
+      <p class="card-text">
+        {{ ques.body|truncatewords:30 }}
+      </p>
+      
+      <div class="d-flex justify-content-between align-items-center">
+        <small>
+          <i class="fas fa-user"></i> Asked by: {{ ques.user.username }}
+        </small>
+        <div>
+          <small class="me-3">
+            <i class="fas fa-comment"></i> {{ ques.answerscount }} Answers
+          </small>
+          <small>
+            <i class="fas fa-eye"></i> {{ ques.views }} Views
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+    <div class="text-center py-5">
+      <div class="display-1 mb-3">?</div>
+      <h5 class="mb-3">No questions available.</h5>
+      <p>Be the first to ask a question!</p>
+      <!-- ADD abutton class here too -->
+      <a class="btn btn-primary mt-3 abutton" href="{% url 'addques' %}">Ask Your First Question</a>
+    </div>
+  {% endfor %}
+</div>
+</body>
+</html>

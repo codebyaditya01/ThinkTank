@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% load static %}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <style>
+    .card:hover {
+    transform: translateY(-10px);
+  }
+
+
+  .card:hover {
+      transform: translateY(+10px);
+  }
+
+
+  body {
+          margin: 0;
+          padding: 0;
+          animation: fadeIn 1.5s ease-in-out;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+
+
+.card {
+    border-radius: 1rem;
+    border: none;
+    background-color: #ffffff;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
+}
+
+.card-title {
+    color: #244885;
+    font-weight: bold;
+}
+
+.card-text {
+    color: #5D001E;
+}
+
+.text-muted {
+    color: #AC3B61 !important;
+    font-style: italic;
+}
+
+.list-group-item {
+    border: none;
+    border-bottom: 1px solid #244885;
+    color: #244885;
+    background-color: #ffffff;
+}
+
+.list-group-item strong {
+    color: #5D001E;
+}
+
+.badge.bg-success,
+.badge.bg-info {
+    background-color: #244885 !important;
+    color: #FBE9D0;
+    font-size: 0.85rem;
+    margin: 0.2rem;
+}
+
+.btn-outline-secondary {
+    border: 2px solid #244885;
+    color: #244885;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #5D001E;
+    color: #FBE9D0;
+}
+
+.btn-primary {
+    background-color: #244885;
+    border: none;
+    font-weight: bold;
+}
+
+.btn-primary:hover {
+    background-color: #5D001E;
+}
+
+.form-label {
+    color: #244885;
+}
+
+input,
+textarea {
+    border-radius: 0.5rem;
+    border: 1px solid #244885;
+}
+
+input:focus,
+textarea:focus {
+    border-color: #5D001E;
+    box-shadow: 0 0 5px rgba(93, 0, 30, 0.4);
+}
+
+h4 {
+    color: #244885;
+    font-weight: bold;
+}
+
+
+  </style>
+</head>
+<body>
+  {% if profile%}
+        <br><br><br>
+      <div class="card text-center shadow-lg p-3 mb-5 bg-body rounded" style="width: 20rem; margin:auto; transition: transform 0.3s;">
+
+        <div class="card-body">
+          <h5 class="card-title">{{ profile.name }}</h5>
+          <p class="card-text">{{ profile.prof }}</p>
+          <p class="card-text"><small class="text-muted">Joined: {{ profile.created_at| date:'M Y'}}</small></p>
+        </div>
+
+        <!-- Profile Details -->
+        <ul class="list-group list-group-flush text-start">
+          <li class="list-group-item"><strong>Email:</strong> {{ profile.email }}</li>
+          <li class="list-group-item"><strong>About:</strong> {{ profile.about }}</li>
+          <li class="list-group-item"><strong>Achievements:</strong>{{ profile.achievements }}</li>
+        </ul>
+
+        <!-- Stats -->
+        <div class="card-body">
+          <span class="badge bg-success animate__animated animate__bounce">Questions: {{ total_questions }}</span>
+          <span class="badge bg-info animate__animated animate__bounce">Answers: {{ total_answers }}</span>
+        </div>
+
+        <div class="btncontainer">
+          <a href="{% url 'list' %}" class="btn btn-outline-secondary abutton">Home</a>
+        </div>
+      </div>
+
+  {% else %}
+  <div class="container mt-5" style="max-width: 500px;">
+    <h4 class="mb-4 text-center">Build Your Profile Here!!</h4>
+
+    <form method="post">
+      {% csrf_token %}
+
+      {% for field in form %}
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}
+            <div class="text-danger small">{{ field.errors }}</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <button type="submit" class="btn btn-primary w-100">
+        Create Profile
+      </button>
+    </form>
+  </div>
+  {% endif %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+<script src="{% static 'thinkapp/js/vote.js' %}"></script>
+</body>
+</html>
